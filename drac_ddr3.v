@@ -6,6 +6,9 @@
 	Lane Cove 2066
 	New South Wales
 	AUSTRALIA
+
+    Slightly modified by Chris Pavlina to fit pinout changes
+    in C4-0.
  
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -332,8 +335,12 @@ wire		[1:0]	ckn;
 // NB ISIM can't grok parameter arrays, hence the following sim/synth bifurcation
 `ifdef XILINX_ISIM
 `else
-	parameter integer bank_a[15:0] = {0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1};
-	parameter integer bank_ba[2:0] = {0, 1, 1};
+//  Bank ID here are backwards from the SIOI original, as I mirrored the PCB
+//  layout. Bank 1 (BUFPLL_X2Y3) is '1'; bank 3 (BUFPLL_X0Y3) is '0'.
+    parameter integer bank_a[15:0] = {0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1};
+//                                    f  e  d  c  b  a  9  8  7  6  5  4  3  2  1  0
+    parameter integer bank_ba[2:0] = {0, 1, 1};
+//                                    2  1  0
 `endif
  
 	wire [15:0] wa;
