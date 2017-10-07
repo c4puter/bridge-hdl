@@ -4,7 +4,7 @@ module bridge (
     inout   [7:0]   limb_d,
     input           limb_cmd,
     input           limb_ncs,
-    input           linb_nwe,
+    input           limb_nwe,
     input           limb_nrd,
     output          limb_nwait,
     output          limb_nreq,
@@ -55,6 +55,34 @@ module bridge (
     input           ddr_clk_in
 );
 
+assign ddr_ba = 'h0;
+assign ddr_addr = 'h0000;
+assign ddr_dm = 'h00;
+assign ddr_nck = 'h0;
+assign ddr_pck = 'h0;
+assign ddr_cke = 'h0;
+assign ddr_nwe = 1;
+assign ddr_ncas = 1;
+assign ddr_nras = 1;
+assign ddr_ns = 'b11;
+assign ddr_odt = 'b00;
+
+
+assign limb_d = 'b10101010;
+assign limb_nwait = 1;
+assign limb_nreq = 1;
+
+assign pci_clk = 0;
+assign pci_ngnt = 'hf;
+assign pci_cbe = 'hf;
+assign pci_nframe = 1;
+assign pci_nirdy = 1;
+
+assign cpu_nwait = 1;
+assign cpu_nack = 'b11;
+assign cpu_nint = 'b11;
+assign cpu_clk_out = 0;
+
 wire ck150;
 wire ck75;
 wire[2:0] ddr_cmd;
@@ -67,6 +95,7 @@ wire [255:0] mem_wrdat;
 wire [31:0] mem_mask;
 wire [7:0] mem_debug;
 
+/*
 assign ddr_nras = ddr_cmd[2];
 assign ddr_ncas = ddr_cmd[1];
 assign ddr_nwe  = ddr_cmd[0];
@@ -77,7 +106,9 @@ assign mem_addr = 29'h0;
 assign mem_wrdat = 256'h0;
 assign mem_mask = 32'h0;
 assign mem_debug = 8'h0;
+*/
 
+/*
 drac_ddr3 drac (
     .ckin           (ddr_clk_in),   // should be 62.5 MHz
     .ckout          (ck150),
@@ -106,5 +137,6 @@ drac_ddr3 drac (
     .dbg_out(),
     .dbg_in(mem_debug)
 );
+*/
 
 endmodule
