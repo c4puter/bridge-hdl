@@ -19,6 +19,7 @@ COCOTB ?= $(PWD)/../../cocotb
 SRCDIR := $(PWD)/../../src
 
 VERILOG_SOURCES := \
+		$(SRCDIR)/flipflop.v \
 		$(SRCDIR)/limb_interface.v
 
 TOPLEVEL = limb_interface

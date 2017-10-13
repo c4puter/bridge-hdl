@@ -1,0 +1,65 @@
+[*]
+[*] GTKWave Analyzer v3.3.82 (w)1999-2017 BSI
+[*] Fri Oct 13 22:47:34 2017
+[*]
+[dumpfile] "/home/cmp/git/c4puter/bridge-hdl/tests/test_limb_interface/out.vcd"
+[dumpfile_mtime] "Fri Oct 13 22:43:42 2017"
+[dumpfile_size] 3122
+[savefile] "/home/cmp/git/c4puter/bridge-hdl/tests/test_limb_interface/wf.gtkw"
+[timestart] 0
+[size] 1916 1042
+[pos] -1 -1
+*-14.000000 3190 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] limb_interface.
+[sst_width] 193
+[signals_width] 177
+[sst_expanded] 1
+[sst_vpaned_height] 306
+@28
+limb_interface.limb_nwait
+limb_interface.limb_clk
+@22
+limb_interface.limb_d_in[7:0]
+@28
+limb_interface.limb_start
+@200
+-
+@22
+limb_interface.wb_adr_o[35:0]
+@28
+limb_interface.wb_cyc_o
+@22
+limb_interface.wb_dat_o[31:0]
+limb_interface.limb_d_out[7:0]
+limb_interface.wb_state[4:0]
+@28
+limb_interface.wb_ack_i
+limb_interface.wb_stb_o
+limb_interface.clk
+@22
+limb_interface.wb_dat_i[31:0]
+@28
+limb_interface.limb_wb_ready_wr
+limb_interface.limb_wb_ready_wr_set
+limb_interface.dff_wb_ready_wr.ce
+limb_interface.dff_wb_ready_wr.clk
+limb_interface.dff_wb_ready_wr.clr
+limb_interface.dff_wb_ready_wr.d
+limb_interface.dff_wb_ready_wr.ff
+limb_interface.dff_wb_ready_wr.q
+limb_interface.wb_ready_rd
+limb_interface.wb_ready_rd_clr
+limb_interface.dff_wb_ready_rd.ce
+limb_interface.dff_wb_ready_rd.clk
+limb_interface.dff_wb_ready_rd.d
+limb_interface.dff_wb_ready_rd.ff
+limb_interface.dff_wb_ready_rd.q
+limb_interface.dff_wb_ready_rd.set
+@29
+limb_interface.async_wb_ready_rd_set
+@28
+limb_interface.limb_nrd
+@22
+limb_interface.limb_state[8:0]
+[pattern_trace] 1
+[pattern_trace] 0
