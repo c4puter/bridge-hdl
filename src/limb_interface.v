@@ -78,7 +78,7 @@ assign      adreg_load[0] =
                 limb_start ||
                 (autoincr && limb_state[5]);
 assign      adreg_load[8:1] = limb_state[8:1];
-assign      next_addr0      = (limb_start == 1) ? limb_d_in : adreg[0] + 1;
+assign      next_addr0      = limb_start ? limb_d_in : adreg[0] + 1;
 
 // Walk through the state machine. This is mostly forward steps, except DATA3
 // returns to DATA0 (block transfer) and limb_start is equivalent to ADDR0.
@@ -99,7 +99,7 @@ assign      limb_nextstate =
 always @(posedge limb_clk) begin
     limb_state <= limb_nextstate;
 
-    if (limb_start == 1)
+    if (limb_start)
         autoincr <= 0;
     else if (limb_state == STATE_DATA3)
         autoincr <= 1;
@@ -107,12 +107,12 @@ end
 
 // Latch address/data
 always @(posedge limb_clk)
-    if (adreg_load[0] == 1) adreg[0] <= next_addr0;
+    if (adreg_load[0]) adreg[0] <= next_addr0;
 
 genvar i;
 for (i = 1; i < 9; i = i + 1)
     always @(posedge limb_clk)
-        if (adreg_load[i] == 1) adreg[i] <= limb_d_in;
+        if (adreg_load[i]) adreg[i] <= limb_d_in;
 
 `include "sim.v"
 
