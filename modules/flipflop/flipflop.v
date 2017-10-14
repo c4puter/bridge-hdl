@@ -23,30 +23,26 @@
  * Uses Spartan 6 FDCE block for synthesis.
  */
 module dff_async_clr (
-    input   d,
-    input   ce,
-    input   clk,
-    output  q,
+    input       d,
+    input       ce,
+    input       clk,
+    output reg  q,
 
-    input   clr
+    input       clr
 );
 
 parameter init = 0;
 
 `ifdef COCOTB_SIM
-    reg     ff;
-    assign  q = clr ? 0 : ff;
-
-    always @(posedge clk)
-        if (ce)
-            ff <= d;
-
-    always @(negedge clr)
-            ff <= 0;
+    always @(clr or posedge clk)
+        if (clr)
+            q <= 0;
+        else if (ce)
+            q <= d;
 
     initial begin
         @(clk);
-        ff <= init;
+        q <= init;
     end
 `else
     FDCE #(
@@ -67,30 +63,26 @@ endmodule
  * Uses Spartan 6 FDPE block for synthesis.
  */
 module dff_async_set (
-    input   d,
-    input   ce,
-    input   clk,
-    output  q,
+    input       d,
+    input       ce,
+    input       clk,
+    output reg  q,
 
-    input   set
+    input       set
 );
 
 parameter init = 0;
 
 `ifdef COCOTB_SIM
-    reg     ff;
-    assign  q = set ? 1 : ff;
-
-    always @(posedge clk)
-        if (ce)
-            ff <= d;
-
-    always @(negedge set)
-        ff <= 1;
+    always @(set or posedge clk)
+        if (set)
+            q <= 1;
+        else if (ce)
+            q <= d;
 
     initial begin
         @(clk);
-        ff <= init;
+        q <= init;
     end
 `else
     FDPE #(
