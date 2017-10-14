@@ -65,16 +65,17 @@ wire            async_wb_ready_rd_set;
 
 reg             limb_cyc_is_write = 0;
 reg             autoincr = 0;
-reg     [8:0]   limb_state  = STATE_ADDR0;
-localparam      STATE_ADDR0 = 1 << 0;
-localparam      STATE_ADDR1 = 1 << 1;
-localparam      STATE_ADDR2 = 1 << 2;
-localparam      STATE_ADDR3 = 1 << 3;
-localparam      STATE_ADDR4 = 1 << 4;
-localparam      STATE_DATA0 = 1 << 5;
-localparam      STATE_DATA1 = 1 << 6;
-localparam      STATE_DATA2 = 1 << 7;
-localparam      STATE_DATA3 = 1 << 8;
+
+localparam      STATE_ADDR0 = 9'b1 << 0;
+localparam      STATE_ADDR1 = 9'b1 << 1;
+localparam      STATE_ADDR2 = 9'b1 << 2;
+localparam      STATE_ADDR3 = 9'b1 << 3;
+localparam      STATE_ADDR4 = 9'b1 << 4;
+localparam      STATE_DATA0 = 9'b1 << 5;
+localparam      STATE_DATA1 = 9'b1 << 6;
+localparam      STATE_DATA2 = 9'b1 << 7;
+localparam      STATE_DATA3 = 9'b1 << 8;
+reg     [10:0]  limb_state  = 0;
 
 assign          limb_d_out  = limb_state == STATE_DATA1 ? wb_data_in_lat[0+:8] :
                               limb_state == STATE_DATA2 ? wb_data_in_lat[8+:8] :
@@ -96,7 +97,7 @@ assign      adreg_load[0] =
 assign      adreg_load[8:1] = limb_state[8:1];
 assign      limb_wb_ready_wr_set = limb_cyc_is_write && limb_state == STATE_DATA3;
 assign      limb_wb_ready_rd_set = !limb_nrd && limb_state == STATE_DATA0;
-assign      next_addr0      = limb_start ? limb_d_in : adreg[0] + 1;
+assign      next_addr0      = limb_start ? limb_d_in : adreg[0] + 8'b1;
 
 // Latch states on each clock
 always @(posedge limb_clk) begin
@@ -105,18 +106,19 @@ always @(posedge limb_clk) begin
         limb_cyc_is_write <= limb_nrd;
     end
 
-    casez({limb_start, limb_state})
-        {1'b1, 9'b?????????}:   limb_state <= STATE_ADDR1;
-        {1'b0, STATE_ADDR0}:    limb_state <= STATE_ADDR1;
-        {1'b0, STATE_ADDR1}:    limb_state <= STATE_ADDR2;
-        {1'b0, STATE_ADDR2}:    limb_state <= STATE_ADDR3;
-        {1'b0, STATE_ADDR3}:    limb_state <= STATE_ADDR4;
-        {1'b0, STATE_ADDR4}:    limb_state <= STATE_DATA0;
-        {1'b0, STATE_DATA0}:    limb_state <= STATE_DATA1;
-        {1'b0, STATE_DATA1}:    limb_state <= STATE_DATA2;
-        {1'b0, STATE_DATA2}:    limb_state <= STATE_DATA3;
-        {1'b0, STATE_DATA3}:    limb_state <= STATE_DATA0;
-        default:                $error("limb_interface limb SM: invalid_state");
+    if (limb_start)
+	     limb_state <= STATE_ADDR1;
+	 else case(limb_state)
+        STATE_ADDR0:    limb_state <= STATE_ADDR1;
+        STATE_ADDR1:    limb_state <= STATE_ADDR2;
+        STATE_ADDR2:    limb_state <= STATE_ADDR3;
+        STATE_ADDR3:    limb_state <= STATE_ADDR4;
+        STATE_ADDR4:    limb_state <= STATE_DATA0;
+        STATE_DATA0:    limb_state <= STATE_DATA1;
+        STATE_DATA1:    limb_state <= STATE_DATA2;
+        STATE_DATA2:    limb_state <= STATE_DATA3;
+        STATE_DATA3:    limb_state <= STATE_DATA0;
+        default:        limb_state <= STATE_ADDR1;
     endcase
 
     if (limb_start)
@@ -130,9 +132,10 @@ always @(posedge limb_clk)
     if (adreg_load[0]) adreg[0] <= next_addr0;
 
 genvar i;
-for (i = 1; i < 9; i = i + 1)
+for (i = 1; i < 9; i = i + 1) begin: adr_dat_load
     always @(posedge limb_clk)
         if (adreg_load[i]) adreg[i] <= limb_d_in;
+end
 
 dff_async_clr #( .init(0) )
 dff_wb_ready_wr (
@@ -155,7 +158,7 @@ localparam      WB_STATE_START_WR  = 1 << 1;
 localparam      WB_STATE_FINISH_WR = 1 << 2;
 localparam      WB_STATE_START_RD  = 1 << 3;
 localparam      WB_STATE_FINISH_RD = 1 << 4;
-reg     [4:0]   wb_state = WB_STATE_WAIT;
+reg     [5:0]   wb_state = 0;
 
 assign  wb_stb_o    = (wb_state == WB_STATE_START_WR) || (wb_state == WB_STATE_START_RD);
 assign  wb_cyc_o    = (wb_state == WB_STATE_START_WR) || (wb_state == WB_STATE_START_RD);
@@ -206,7 +209,7 @@ always @(posedge clk) begin
                 wb_state <= WB_STATE_WAIT;
 
             default:
-                $error("limb_interface wishbone SM: invalid state");
+                wb_state <= WB_STATE_WAIT;
         endcase
 end
 

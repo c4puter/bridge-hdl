@@ -2,9 +2,8 @@ module bridge (
 
     // EC/LIMB data bus
     inout   [7:0]   limb_d,
-    input           limb_cmd,
-    input           limb_ncs,
-    input           limb_nwe,
+    input           limb_start,
+    input           limb_clk,
     input           limb_nrd,
     output          limb_nwait,
     output          limb_nreq,
@@ -67,11 +66,6 @@ assign ddr_nras = 1;
 assign ddr_ns = 'b11;
 assign ddr_odt = 'b00;
 
-
-assign limb_d = 'b10101010;
-assign limb_nwait = 1;
-assign limb_nreq = 1;
-
 assign pci_clk = 0;
 assign pci_ngnt = 'hf;
 assign pci_cbe = 'hf;
@@ -82,6 +76,8 @@ assign cpu_nwait = 1;
 assign cpu_nack = 'b11;
 assign cpu_nint = 'b11;
 assign cpu_clk_out = 0;
+
+assign limb_nreq = 1'b0;
 
 wire ck150;
 wire ck75;
@@ -94,6 +90,53 @@ wire [28:0] mem_addr;
 wire [255:0] mem_wrdat;
 wire [31:0] mem_mask;
 wire [7:0] mem_debug;
+
+(* keep="soft" *)
+wire    [35:0]  wb_adr_full;
+wire    [5:0]   wb_adr;
+wire            wb_we;
+wire    [3:0]   wb_sel;
+wire            wb_stb;
+wire            wb_cyc;
+wire    [31:0]  wb_dat_to_ram;
+wire    [31:0]  wb_dat_from_ram;
+wire            wb_ack;
+wire    [7:0]   limb_d_out;
+wire            limb_d_oe;
+
+assign wb_adr = {wb_adr_full[3:0], 2'b00};
+assign limb_d = limb_d_oe ? limb_d_out : 8'bZZZZZZZZ;
+
+limb_interface limb_interface_inst (
+    .limb_d_in(limb_d),
+    .limb_d_out(limb_d_out),
+    .limb_d_oe(limb_d_oe),
+    .limb_clk(limb_clk),
+    .limb_nrd(limb_nrd),
+    .limb_start(limb_start),
+    .limb_nwait(limb_nwait),
+
+    .wb_adr_o(wb_adr_full),
+    .wb_we_o(wb_we),
+    .wb_sel_o(wb_sel),
+    .wb_stb_o(wb_stb),
+    .wb_cyc_o(wb_cyc),
+    .wb_dat_o(wb_dat_to_ram),
+    .wb_dat_i(wb_dat_from_ram),
+    .wb_ack_i(wb_ack),
+    .clk(ddr_clk_in),
+    .reset(1'b0) );
+
+wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
+    .clk(ddr_clk_in),
+    .adr_i(wb_adr),
+    .dat_i(wb_dat_to_ram),
+    .dat_o(wb_dat_from_ram),
+    .we_i(wb_we),
+    .sel_i(wb_sel),
+    .stb_i(wb_stb),
+    .ack_o(wb_ack),
+    .cyc_i(wb_cyc) );
 
 /*
 assign ddr_nras = ddr_cmd[2];
