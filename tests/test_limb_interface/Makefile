@@ -22,7 +22,7 @@ VERILOG_SOURCES := \
 		$(SRCDIR)/flipflop.v \
 		$(SRCDIR)/limb_interface.v \
 		$(SRCDIR)/wb_ram.v \
-		$(SRCDIR)/limb_test_top.v
+		./limb_test_top.v
 
 TOPLEVEL = limb_test_top
 MODULE  = test_limb_interface

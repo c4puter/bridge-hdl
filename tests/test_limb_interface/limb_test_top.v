@@ -55,4 +55,9 @@ wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
     .ack_o(wb_ack),
     .cyc_i(wb_cyc) );
 
+initial begin
+    $dumpfile("out.vcd");
+    $dumpvars();
+end
+
 endmodule

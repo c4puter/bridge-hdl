@@ -210,6 +210,4 @@ always @(posedge clk) begin
         endcase
 end
 
-`include "sim.v"
-
 endmodule
