@@ -42,7 +42,6 @@ parameter init = 0;
             ff <= d;
 
     always @(negedge clr)
-        if ($time != 0)
             ff <= 0;
 
     initial begin
