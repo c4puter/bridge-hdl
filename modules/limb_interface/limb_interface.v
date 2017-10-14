@@ -17,8 +17,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-`include "timescale.v"
-
 module limb_interface (
     // LIMB interface - toplevel should combine limb_d_in, limb_d_out, and
     // limb_d_oe into a single 'inout' bus.

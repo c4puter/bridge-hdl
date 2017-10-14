@@ -16,12 +16,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 COCOTB ?= $(PWD)/../../cocotb
-SRCDIR := $(PWD)/../../src
+SRCDIR := $(PWD)/../../modules
 
 VERILOG_SOURCES := \
-		$(SRCDIR)/flipflop.v \
-		$(SRCDIR)/limb_interface.v \
-		$(SRCDIR)/wb_ram.v \
+		$(SRCDIR)/flipflop/flipflop.v \
+		$(SRCDIR)/limb_interface/limb_interface.v \
+		$(SRCDIR)/wb_ram/wb_ram.v \
 		./limb_test_top.v
 
 TOPLEVEL = limb_test_top
