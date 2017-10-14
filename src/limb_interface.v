@@ -160,8 +160,8 @@ reg     [4:0]   wb_state = WB_STATE_WAIT;
 assign  wb_stb_o    = (wb_state == WB_STATE_START_WR) || (wb_state == WB_STATE_START_RD);
 assign  wb_cyc_o    = (wb_state == WB_STATE_START_WR) || (wb_state == WB_STATE_START_RD);
 assign  wb_we_o     = (wb_state == WB_STATE_START_WR);
-assign  async_wb_ready_wr_clr = (wb_state == WB_STATE_FINISH_WR);
-assign  async_wb_ready_rd_clr = (wb_state == WB_STATE_FINISH_RD);
+assign  async_wb_ready_wr_clr = (wb_state == WB_STATE_FINISH_WR) || reset;
+assign  async_wb_ready_rd_clr = (wb_state == WB_STATE_FINISH_RD) || reset;
 
 always @(posedge clk) begin
     wb_ready_wr <= limb_wb_ready_wr;
