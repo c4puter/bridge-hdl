@@ -69,17 +69,12 @@ for (i = 0; i < 9; i = i + 1)
     initial L_ad_from_limb[i] = 8'h00;
 
 // Capture address and data coming from LIMB
-always @(posedge L_clk) begin
+always @(posedge L_clk)
     if (L_capture_limb[0]) L_ad_from_limb[0] <= (L_autoincr ? L_ad_from_limb[0] + 8'b1 : limb_d_in);
-    if (L_capture_limb[1]) L_ad_from_limb[1] <= limb_d_in;
-    if (L_capture_limb[2]) L_ad_from_limb[2] <= limb_d_in;
-    if (L_capture_limb[3]) L_ad_from_limb[3] <= limb_d_in;
-    if (L_capture_limb[4]) L_ad_from_limb[4] <= limb_d_in;
-    if (L_capture_limb[5]) L_ad_from_limb[5] <= limb_d_in;
-    if (L_capture_limb[6]) L_ad_from_limb[6] <= limb_d_in;
-    if (L_capture_limb[7]) L_ad_from_limb[7] <= limb_d_in;
-    if (L_capture_limb[8]) L_ad_from_limb[8] <= limb_d_in;
-end
+
+for (i = 1; i < 9; i = i + 1)
+    always @(posedge L_clk)
+        if (L_capture_limb[i]) L_ad_from_limb[i] <= limb_d_in;
 
 // Transfer address and data from LIMB to Wishbone clock domain
 always @(posedge W_clk) begin
