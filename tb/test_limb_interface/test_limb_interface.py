@@ -109,12 +109,14 @@ def test_limb_interface(dut):
     dut.limb_nrd = 1
     dut.limb_start = 0
     dut.clk = 0
-    dut.reset = 0
 
     data_in = [random.randint(0, 0xFFFFFFFF) for i in range(16)]
     data_out = []
 
     yield Timer(CLK_HALF)
+
+    yield limb_send_data(dut, 0xDEADBEEF)
+
     yield limb_send_addr(dut, 0x0)
     for i in data_in:
         yield limb_send_data(dut, i)

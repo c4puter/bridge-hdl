@@ -4,7 +4,7 @@ SHELL := /bin/bash
 .PHONY: test syn hdlmake clean mrproper
 
 test:
-	make -C tb/test_limb_interface
+	cd tb/test_limb_interface && make && gtkwave wf.gtkw
 
 syn:
 	source ${ISESETTINGS} && make -C syn/c4-0_ise

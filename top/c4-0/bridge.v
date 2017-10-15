@@ -124,8 +124,7 @@ limb_interface limb_interface_inst (
     .wb_dat_o(wb_dat_to_ram),
     .wb_dat_i(wb_dat_from_ram),
     .wb_ack_i(wb_ack),
-    .clk(ddr_clk_in),
-    .reset(1'b0) );
+    .clk(ddr_clk_in) );
 
 wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
     .clk(ddr_clk_in),

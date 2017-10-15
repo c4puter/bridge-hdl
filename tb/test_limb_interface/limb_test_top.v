@@ -8,8 +8,7 @@ module limb_test_top (
     input               limb_nrd,
     input               limb_start,
     output              limb_nwait,
-    input               clk,
-    input               reset
+    input               clk
 );
 
 wire    [35:0]  wb_adr_full;
@@ -41,8 +40,7 @@ limb_interface limb_interface_inst (
     .wb_dat_o(wb_dat_to_ram),
     .wb_dat_i(wb_dat_from_ram),
     .wb_ack_i(wb_ack),
-    .clk(clk),
-    .reset(reset) );
+    .clk(clk) );
 
 wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
     .clk(clk),

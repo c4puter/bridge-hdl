@@ -26,7 +26,7 @@ module dff_async_clr (
     input       d,
     input       ce,
     input       clk,
-    output reg  q,
+    output      q,
 
     input       clr
 );
@@ -34,15 +34,17 @@ module dff_async_clr (
 parameter init = 0;
 
 `ifdef COCOTB_SIM
+    reg     qreg;
+    assign  q = qreg;
     always @(clr or posedge clk)
         if (clr)
-            q <= 0;
+            qreg <= 0;
         else if (ce)
-            q <= d;
+            qreg <= d;
 
     initial begin
         @(clk);
-        q <= init;
+        qreg <= init;
     end
 `else
     FDCE #(
@@ -66,7 +68,7 @@ module dff_async_set (
     input       d,
     input       ce,
     input       clk,
-    output reg  q,
+    output      q,
 
     input       set
 );
@@ -74,15 +76,17 @@ module dff_async_set (
 parameter init = 0;
 
 `ifdef COCOTB_SIM
+    reg     qreg;
+    assign  q = qreg;
     always @(set or posedge clk)
         if (set)
-            q <= 1;
+            qreg <= 1;
         else if (ce)
-            q <= d;
+            qreg <= d;
 
     initial begin
         @(clk);
-        q <= init;
+        qreg <= init;
     end
 `else
     FDPE #(
