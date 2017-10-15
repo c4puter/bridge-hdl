@@ -54,30 +54,39 @@ module bridge (
     input           ddr_clk_in
 );
 
-assign ddr_ba = 'h0;
-assign ddr_addr = 'h0000;
-assign ddr_dm = 'h00;
-assign ddr_nck = 'h0;
-assign ddr_pck = 'h0;
-assign ddr_cke = 'h0;
-assign ddr_nwe = 1;
-assign ddr_ncas = 1;
-assign ddr_nras = 1;
-assign ddr_ns = 'b11;
-assign ddr_odt = 'b00;
+assign ddr_nqds     = 8'hZZ;
+assign ddr_pqds     = 8'hZZ;
+assign ddr_dq       = 64'hZZZZZZZZZZZZZZZZ;
+assign ddr_ba       = 3'b000;
+assign ddr_addr     = 16'h0000;
+assign ddr_dm       = 8'h00;
+assign ddr_nck      = 2'b00;
+assign ddr_pck      = 2'b00;
+assign ddr_cke      = 2'b00;
+assign ddr_nwe      = 1'b1;
+assign ddr_ncas     = 1'b1;
+assign ddr_nras     = 1'b1;
+assign ddr_ns       = 2'b11;
+assign ddr_odt      = 2'b00;
 
-assign pci_clk = 0;
-assign pci_ngnt = 'hf;
-assign pci_cbe = 'hf;
-assign pci_nframe = 1;
-assign pci_nirdy = 1;
+assign pci_ad       = 32'hZZZZZZZZ;
+assign pci_nserr    = 1'bZ;
+assign pci_nperr    = 1'bZ;
+assign pci_nlock    = 1'bZ;
+assign pci_parity   = 1'bZ;
+assign pci_clk      = 1'b0;
+assign pci_ngnt     = 4'hF;
+assign pci_cbe      = 4'hF;
+assign pci_nframe   = 1'b1;
+assign pci_nirdy    = 1'b1;
 
-assign cpu_nwait = 1;
-assign cpu_nack = 'b11;
-assign cpu_nint = 'b11;
-assign cpu_clk_out = 0;
+assign cpu_d        = 32'hZZZZZZZZ;
+assign cpu_nwait    = 1'b1;
+assign cpu_nack     = 1'b11;
+assign cpu_nint     = 1'b11;
+assign cpu_clk_out  = 1'b0;
 
-assign limb_nreq = 1'b0;
+assign limb_nreq    = 1'b0;
 
 wire ck150;
 wire ck75;

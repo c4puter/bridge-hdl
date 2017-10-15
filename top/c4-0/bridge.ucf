@@ -2,6 +2,8 @@
 #INST "*BUFPLLS[1].bufpll_600_18" LOC=BUFPLL_X2Y3;
 #INST "drac/READ" TIG;
 NET "limb_clk" CLOCK_DEDICATED_ROUTE = FALSE;
+NET "cpu_nwait" DRIVE = 8;
+NET "cpu_clk_out" DRIVE = 8;
 
 NET "cpu_d[*]" IOSTANDARD = LVCMOS15;
 NET "cpu_nack[*]" IOSTANDARD = LVCMOS15;
@@ -327,13 +329,6 @@ NET "limb_nwait" OUT_TERM = UNTUNED_50;
 NET "cpu_d[*]" OUT_TERM = UNTUNED_25;
 NET "cpu_nack[*]" OUT_TERM = UNTUNED_25;
 NET "cpu_nint[*]" OUT_TERM = UNTUNED_25;
-NET "cpu_clk_out" OUT_TERM = UNTUNED_25;
-NET "cpu_nwait" OUT_TERM = UNTUNED_25;
-
-NET "cpu_nwait" DRIVE = 24;
-NET "cpu_clk_out" DRIVE = 24;
-
-
 
 # cpu_d[]
 NET "cpu_d[0]" PULLUP;
@@ -372,50 +367,7 @@ NET "cpu_d[31]" PULLUP;
 NET "cpu_nreq[1]" PULLUP;
 NET "cpu_nreq[0]" PULLUP;
 NET "cpu_naddr" PULLUP;
-NET "cpu_clk_out" PULLUP;
-NET "cpu_nwait" PULLUP;
 NET "cpu_nwr" PULLUP;
-NET "cpu_nint[1]" PULLUP;
-NET "cpu_nint[0]" PULLUP;
-NET "cpu_nack[1]" PULLUP;
-NET "cpu_nack[0]" PULLUP;
-
-# ddr_addr[]
-NET "ddr_addr[0]" PULLUP;
-NET "ddr_addr[1]" PULLUP;
-NET "ddr_addr[2]" PULLUP;
-NET "ddr_addr[3]" PULLUP;
-NET "ddr_addr[4]" PULLUP;
-NET "ddr_addr[5]" PULLUP;
-NET "ddr_addr[6]" PULLUP;
-NET "ddr_addr[7]" PULLUP;
-NET "ddr_addr[8]" PULLUP;
-NET "ddr_addr[9]" PULLUP;
-NET "ddr_addr[10]" PULLUP;
-NET "ddr_addr[11]" PULLUP;
-NET "ddr_addr[12]" PULLUP;
-NET "ddr_addr[13]" PULLUP;
-NET "ddr_addr[14]" PULLUP;
-NET "ddr_addr[15]" PULLUP;
-
-# ddr_ba[]
-NET "ddr_ba[0]" PULLUP;
-NET "ddr_ba[1]" PULLUP;
-NET "ddr_ba[2]" PULLUP;
-
-# ddr_cke[]
-NET "ddr_cke[0]" PULLUP;
-NET "ddr_cke[1]" PULLUP;
-
-# ddr_dm[]
-NET "ddr_dm[0]" PULLUP;
-NET "ddr_dm[1]" PULLUP;
-NET "ddr_dm[2]" PULLUP;
-NET "ddr_dm[3]" PULLUP;
-NET "ddr_dm[4]" PULLUP;
-NET "ddr_dm[5]" PULLUP;
-NET "ddr_dm[6]" PULLUP;
-NET "ddr_dm[7]" PULLUP;
 
 # ddr_dq[]
 NET "ddr_dq[0]" PULLUP;
@@ -482,12 +434,6 @@ NET "ddr_dq[61]" PULLUP;
 NET "ddr_dq[62]" PULLUP;
 NET "ddr_dq[63]" PULLUP;
 
-# ddr_nck[], ddr_pck[]
-NET "ddr_nck[0]" PULLUP;
-NET "ddr_pck[0]" PULLUP;
-NET "ddr_nck[1]" PULLUP;
-NET "ddr_pck[1]" PULLUP;
-
 # ddr_nqds[], ddr_pqds[]
 NET "ddr_ndqs[0]" PULLUP;
 NET "ddr_pdqs[0]" PULLUP;
@@ -505,18 +451,6 @@ NET "ddr_ndqs[6]" PULLUP;
 NET "ddr_pdqs[6]" PULLUP;
 NET "ddr_ndqs[7]" PULLUP;
 NET "ddr_pdqs[7]" PULLUP;
-
-# ddr_ns[]
-NET "ddr_ns[0]" PULLUP;
-NET "ddr_ns[1]" PULLUP;
-
-# ddr_odt[]
-NET "ddr_odt[0]" PULLUP;
-NET "ddr_odt[1]" PULLUP;
-
-NET "ddr_ncas" PULLUP;
-NET "ddr_nras" PULLUP;
-NET "ddr_nwe" PULLUP;
 
 NET "limb_d[0]" PULLUP;
 NET "limb_d[1]" PULLUP;
@@ -558,14 +492,6 @@ NET "pci_ad[2]" PULLUP;
 NET "pci_ad[8]" PULLUP;
 NET "pci_ad[0]" PULLUP;
 NET "pci_ad[1]" PULLUP;
-NET "pci_cbe[3]" PULLUP;
-NET "pci_cbe[2]" PULLUP;
-NET "pci_cbe[1]" PULLUP;
-NET "pci_cbe[0]" PULLUP;
-NET "pci_ngnt[3]" PULLUP;
-NET "pci_ngnt[2]" PULLUP;
-NET "pci_ngnt[1]" PULLUP;
-NET "pci_ngnt[0]" PULLUP;
 NET "pci_nint[3]" PULLUP;
 NET "pci_nint[2]" PULLUP;
 NET "pci_nint[1]" PULLUP;
@@ -576,13 +502,8 @@ NET "pci_nreq[1]" PULLUP;
 NET "pci_nreq[0]" PULLUP;
 NET "limb_start" PULLDOWN;
 NET "limb_nrd" PULLUP;
-NET "limb_nwait" PULLUP;
-NET "limb_nreq" PULLUP;
 NET "limb_clk" PULLDOWN;
-NET "pci_clk" PULLUP;
 NET "pci_ndevsel" PULLUP;
-NET "pci_nframe" PULLUP;
-NET "pci_nirdy" PULLUP;
 NET "pci_nlock" PULLUP;
 NET "pci_nperr" PULLUP;
 NET "pci_nserr" PULLUP;
