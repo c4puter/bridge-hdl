@@ -78,7 +78,6 @@ def limb_send_data(dut, data):
 @cocotb.coroutine
 def limb_get_data(dut, rx):
     dut.limb_nrd = 0
-    yield wb_clk_tick(dut)
     yield limb_clk_tick(dut)
     while not int(dut.limb_nwait):
         yield wb_clk_tick(dut)
