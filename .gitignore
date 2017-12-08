@@ -71,3 +71,23 @@ _xmsgs/
 results.xml
 __pycache__
 sim_build
+
+syn/c4-0_ise/bitstream
+syn/c4-0_ise/bitstream.tcl
+syn/c4-0_ise/bridge.bin
+syn/c4-0_ise/bridge.xise
+syn/c4-0_ise/files.tcl
+syn/c4-0_ise/map
+syn/c4-0_ise/map.tcl
+syn/c4-0_ise/par
+syn/c4-0_ise/par.tcl
+syn/c4-0_ise/project
+syn/c4-0_ise/project.tcl
+syn/c4-0_ise/synthesize
+syn/c4-0_ise/synthesize.tcl
+syn/c4-0_ise/translate
+syn/c4-0_ise/translate.tcl
+
+# crap
+log
+syn/c4-0_ise/*.log
