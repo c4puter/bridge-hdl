@@ -85,7 +85,7 @@ always @(posedge W_clk) begin
 end
 
 // Miscellaneous interface control signals
-assign limb_d_oe = limb_nrd;
+assign limb_d_oe = !limb_nrd;
 assign wb_sel_o  = 4'hF;
 
 // Capture data from Wishbone for LIMB
