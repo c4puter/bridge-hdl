@@ -69,33 +69,7 @@ assign ddr_nras     = 1'b1;
 assign ddr_ns       = 2'b11;
 assign ddr_odt      = 2'b00;
 
-wire ddr_clk_buf;
-
-BUFG clkbuf (
-    .I(ddr_clk_in),
-    .O(ddr_clk_buf) );
-
-wire inv_ddr_clk;
-assign inv_ddr_clk = ~ddr_clk_buf;
-
-ODDR2 #( .DDR_ALIGNMENT("NONE"), .INIT(1'b0), .SRTYPE("SYNC") ) clkfwd (
-    .Q(pci_ad[24]),
-    .C0(ddr_clk_buf),
-    .C1(inv_ddr_clk),
-    .CE(1'b1),
-    .D0(1'b0),
-    .D1(1'b1),
-    .R(1'b0),
-    .S(1'b0) );
-
-genvar i;
-for (i = 0; i < 32; i = i + 1) begin
-    if (i != 24)
-        assign pci_ad[i] = 1'bZ;
-end
-//assign pci_ad       = 32'hZZZZZZZZ;
-//assign pci_ad[24]   = ddr_clk_in;
-//assign pci_ad[26]   = cpu_clk_in;
+assign pci_ad       = 32'hZZZZZZZZ;
 assign pci_nserr    = 1'bZ;
 assign pci_nperr    = 1'bZ;
 assign pci_nlock    = 1'bZ;
@@ -159,10 +133,10 @@ limb_interface limb_interface_inst (
     .wb_dat_o(wb_dat_to_ram),
     .wb_dat_i(wb_dat_from_ram),
     .wb_ack_i(wb_ack),
-    .clk(ddr_clk_buf) );
+    .clk(ddr_clk_in) );
 
 wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
-    .clk(ddr_clk_buf),
+    .clk(ddr_clk_in),
     .adr_i(wb_adr),
     .dat_i(wb_dat_to_ram),
     .dat_o(wb_dat_from_ram),
@@ -187,7 +161,7 @@ assign mem_debug = 8'h0;
 
 /*
 drac_ddr3 drac (
-    .ckin           (ddr_clk_buf),   // should be 62.5 MHz
+    .ckin           (ddr_clk_in),   // should be 62.5 MHz
     .ckout          (ck150),
     .ckouthalf      (ck75),
     .reset          (ddr_reset),
