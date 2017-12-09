@@ -29,18 +29,18 @@ endif
 #target for performing local synthesis
 all: bitstream
 
-SOURCES_UCFFile := \
-../../top/c4-0/bridge.ucf
-
 SOURCES_VerilogFile := \
 ../../modules/wb_ram/wb_ram.v \
 ../../top/c4-0/bridge.v \
 ../../modules/flipflop/flipflop.v \
 ../../modules/limb_interface/limb_interface.v
 
+SOURCES_UCFFile := \
+../../top/c4-0/bridge.ucf
+
 files.tcl:
-		@$(foreach sourcefile, $(SOURCES_UCFFile), echo "xfile add $(sourcefile)" >> $@ &)
 		@$(foreach sourcefile, $(SOURCES_VerilogFile), echo "xfile add $(sourcefile)" >> $@ &)
+		@$(foreach sourcefile, $(SOURCES_UCFFile), echo "xfile add $(sourcefile)" >> $@ &)
 
 SYN_PRE_PROJECT_CMD := 
 SYN_POST_PROJECT_CMD := 
