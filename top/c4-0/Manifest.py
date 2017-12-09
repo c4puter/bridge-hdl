@@ -6,5 +6,6 @@ modules = {
         "../../modules/flipflop",
         "../../modules/limb_interface",
         "../../modules/wb_ram",
+        "../../modules/wb_conmax",
         ]
     }

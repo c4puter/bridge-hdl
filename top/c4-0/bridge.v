@@ -100,20 +100,79 @@ wire [255:0] mem_wrdat;
 wire [31:0] mem_mask;
 wire [7:0] mem_debug;
 
-(* keep="soft" *)
-wire    [35:0]  wb_adr_full;
-wire    [5:0]   wb_adr;
-wire            wb_we;
-wire    [3:0]   wb_sel;
-wire            wb_stb;
-wire            wb_cyc;
-wire    [31:0]  wb_dat_to_ram;
-wire    [31:0]  wb_dat_from_ram;
-wire            wb_ack;
+`define DEF_WISHBONE_WIRES(name) \
+    (* keep="soft" *) \
+    wire    [35:0]  wb_adr_``name; \
+    wire            wb_we_``name; \
+    wire    [3:0]   wb_sel_``name; \
+    wire            wb_stb_``name; \
+    wire            wb_cyc_``name; \
+    wire    [31:0]  wb_dat_to_``name; \
+    wire    [31:0]  wb_dat_from_``name; \
+    wire            wb_ack_``name;
+
+`define DEF_WISHBONE_UNUSED(n) \
+    wire            wb_ack_stb_``n;
+
+`define CONNECT_MASTER(n, name) \
+    .m``n``_data_i(wb_dat_from_``name), \
+    .m``n``_data_o(wb_dat_to_``name), \
+    .m``n``_addr_i(wb_adr_``name), \
+    .m``n``_sel_i(wb_sel_``name), \
+    .m``n``_we_i(wb_we_``name), \
+    .m``n``_cyc_i(wb_cyc_``name), \
+    .m``n``_stb_i(wb_stb_``name), \
+    .m``n``_ack_o(wb_ack_``name)
+
+`define UNUSED_MASTER(n) \
+    .m``n``_data_i(32'h00000000), \
+    .m``n``_addr_i(36'h000000000), \
+    .m``n``_sel_i(4'h0), \
+    .m``n``_we_i(1'b0), \
+    .m``n``_cyc_i(1'b0), \
+    .m``n``_stb_i(1'b0)
+
+`define CONNECT_SLAVE(n, name) \
+    .s``n``_data_i(wb_dat_from_``name), \
+    .s``n``_data_o(wb_dat_to_``name), \
+    .s``n``_addr_o(wb_adr_``name), \
+    .s``n``_sel_o(wb_sel_``name), \
+    .s``n``_we_o(wb_we_``name), \
+    .s``n``_cyc_o(wb_cyc_``name), \
+    .s``n``_stb_o(wb_stb_``name), \
+    .s``n``_ack_i(wb_ack_``name), \
+    .s``n``_err_i(1'b0), \
+    .s``n``_rty_i(1'b0)
+
+`define UNUSED_SLAVE(n) \
+    .s``n``_data_i(32'h00000000), \
+    .s``n``_ack_i(wb_ack_stb_``n), \
+    .s``n``_stb_o(wb_ack_stb_``n), \
+    .s``n``_err_i(1'b0), \
+    .s``n``_rty_i(1'b0)
+
+`DEF_WISHBONE_WIRES(limb)
+`DEF_WISHBONE_WIRES(blockram)
+`DEF_WISHBONE_UNUSED(1)
+`DEF_WISHBONE_UNUSED(2)
+`DEF_WISHBONE_UNUSED(3)
+`DEF_WISHBONE_UNUSED(4)
+`DEF_WISHBONE_UNUSED(5)
+`DEF_WISHBONE_UNUSED(6)
+`DEF_WISHBONE_UNUSED(7)
+`DEF_WISHBONE_UNUSED(8)
+`DEF_WISHBONE_UNUSED(9)
+`DEF_WISHBONE_UNUSED(10)
+`DEF_WISHBONE_UNUSED(11)
+`DEF_WISHBONE_UNUSED(12)
+`DEF_WISHBONE_UNUSED(13)
+`DEF_WISHBONE_UNUSED(14)
+`DEF_WISHBONE_UNUSED(15)
+
 wire    [7:0]   limb_d_out;
 wire            limb_d_oe;
 
-assign wb_adr = {wb_adr_full[3:0], 2'b00};
+//assign wb_adr = {wb_adr_full[3:0], 2'b00};
 assign limb_d = limb_d_oe ? limb_d_out : 8'bZZZZZZZZ;
 
 limb_interface limb_interface_inst (
@@ -125,26 +184,57 @@ limb_interface limb_interface_inst (
     .limb_start(limb_start),
     .limb_nwait(limb_nwait),
 
-    .wb_adr_o(wb_adr_full),
-    .wb_we_o(wb_we),
-    .wb_sel_o(wb_sel),
-    .wb_stb_o(wb_stb),
-    .wb_cyc_o(wb_cyc),
-    .wb_dat_o(wb_dat_to_ram),
-    .wb_dat_i(wb_dat_from_ram),
-    .wb_ack_i(wb_ack),
+    .wb_adr_o(wb_adr_limb),
+    .wb_we_o(wb_we_limb),
+    .wb_sel_o(wb_sel_limb),
+    .wb_stb_o(wb_stb_limb),
+    .wb_cyc_o(wb_cyc_limb),
+    .wb_dat_o(wb_dat_from_limb),
+    .wb_dat_i(wb_dat_to_limb),
+    .wb_ack_i(wb_ack_limb),
     .clk(ddr_clk_in) );
 
 wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
     .clk(ddr_clk_in),
-    .adr_i(wb_adr),
-    .dat_i(wb_dat_to_ram),
-    .dat_o(wb_dat_from_ram),
-    .we_i(wb_we),
-    .sel_i(wb_sel),
-    .stb_i(wb_stb),
-    .ack_o(wb_ack),
-    .cyc_i(wb_cyc) );
+    .adr_i({wb_adr_blockram[3:0], 2'b00}),
+    .dat_i(wb_dat_to_blockram),
+    .dat_o(wb_dat_from_blockram),
+    .we_i(wb_we_blockram),
+    .sel_i(wb_sel_blockram),
+    .stb_i(wb_stb_blockram),
+    .ack_o(wb_ack_blockram),
+    .cyc_i(wb_cyc_blockram) );
+
+wb_conmax_top #( .dw(32), .aw(36) ) wb_conmax_inst (
+    .clk_i(ddr_clk_in),
+    .rst_i(1'b0),
+
+    `CONNECT_MASTER(0, limb),
+    `UNUSED_MASTER(1),
+    `UNUSED_MASTER(2),
+    `UNUSED_MASTER(3),
+    `UNUSED_MASTER(4),
+    `UNUSED_MASTER(5),
+    `UNUSED_MASTER(6),
+    `UNUSED_MASTER(7),
+
+    `CONNECT_SLAVE(0, blockram),
+    `UNUSED_SLAVE(1),
+    `UNUSED_SLAVE(2),
+    `UNUSED_SLAVE(3),
+    `UNUSED_SLAVE(4),
+    `UNUSED_SLAVE(5),
+    `UNUSED_SLAVE(6),
+    `UNUSED_SLAVE(7),
+    `UNUSED_SLAVE(8),
+    `UNUSED_SLAVE(9),
+    `UNUSED_SLAVE(10),
+    `UNUSED_SLAVE(11),
+    `UNUSED_SLAVE(12),
+    `UNUSED_SLAVE(13),
+    `UNUSED_SLAVE(14),
+    `UNUSED_SLAVE(15)
+);
 
 /*
 assign ddr_nras = ddr_cmd[2];

@@ -31,9 +31,18 @@ all: bitstream
 
 SOURCES_VerilogFile := \
 ../../modules/wb_ram/wb_ram.v \
+../../modules/wb_conmax/wb_conmax_pri_dec.v \
+../../modules/wb_conmax/wb_conmax_arb.v \
 ../../top/c4-0/bridge.v \
+../../modules/wb_conmax/wb_conmax_rf.v \
+../../modules/wb_conmax/wb_conmax_pri_enc.v \
+../../modules/wb_conmax/wb_conmax_defines.v \
+../../modules/wb_conmax/wb_conmax_msel.v \
+../../modules/limb_interface/limb_interface.v \
 ../../modules/flipflop/flipflop.v \
-../../modules/limb_interface/limb_interface.v
+../../modules/wb_conmax/wb_conmax_master_if.v \
+../../modules/wb_conmax/wb_conmax_top.v \
+../../modules/wb_conmax/wb_conmax_slave_if.v
 
 SOURCES_UCFFile := \
 ../../top/c4-0/bridge.ucf
