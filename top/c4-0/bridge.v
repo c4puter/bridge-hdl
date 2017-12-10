@@ -28,7 +28,7 @@ module bridge (
     output          pci_nframe,
     input           pci_ntrdy,
     output          pci_nirdy,
-    input           pci_ndevsel,
+    output          pci_ndevsel,
     input           pci_nstop,
     inout           pci_nserr,
     inout           pci_nperr,
@@ -64,6 +64,7 @@ assign pci_ngnt     = 4'hF;
 assign pci_cbe      = 4'hF;
 assign pci_nframe   = 1'b1;
 assign pci_nirdy    = 1'b1;
+assign pci_ndevsel  = 1'b1;
 
 assign cpu_d        = 32'hZZZZZZZZ;
 assign cpu_nwait    = 1'b1;
