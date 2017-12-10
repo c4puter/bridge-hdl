@@ -54,21 +54,6 @@ module bridge (
     input           ddr_clk_in
 );
 
-assign ddr_nqds     = 8'hZZ;
-assign ddr_pqds     = 8'hZZ;
-assign ddr_dq       = 64'hZZZZZZZZZZZZZZZZ;
-assign ddr_ba       = 3'b000;
-assign ddr_addr     = 16'h0000;
-assign ddr_dm       = 8'h00;
-assign ddr_nck      = 2'b00;
-assign ddr_pck      = 2'b00;
-assign ddr_cke      = 2'b00;
-assign ddr_nwe      = 1'b1;
-assign ddr_ncas     = 1'b1;
-assign ddr_nras     = 1'b1;
-assign ddr_ns       = 2'b11;
-assign ddr_odt      = 2'b00;
-
 assign pci_ad       = 32'hZZZZZZZZ;
 assign pci_nserr    = 1'bZ;
 assign pci_nperr    = 1'bZ;
@@ -92,13 +77,6 @@ wire ck150;
 wire ck75;
 wire[2:0] ddr_cmd;
 wire ddr_reset;
-
-wire mem_rd;
-wire mem_wr;
-wire [28:0] mem_addr;
-wire [255:0] mem_wrdat;
-wire [31:0] mem_mask;
-wire [7:0] mem_debug;
 
 `define DEF_WISHBONE_WIRES(name) \
     (* keep="soft" *) \
@@ -153,6 +131,7 @@ wire [7:0] mem_debug;
 
 `DEF_WISHBONE_WIRES(limb)
 `DEF_WISHBONE_WIRES(blockram)
+`DEF_WISHBONE_WIRES(dram)
 `DEF_WISHBONE_UNUSED(1)
 `DEF_WISHBONE_UNUSED(2)
 `DEF_WISHBONE_UNUSED(3)
@@ -166,7 +145,6 @@ wire [7:0] mem_debug;
 `DEF_WISHBONE_UNUSED(11)
 `DEF_WISHBONE_UNUSED(12)
 `DEF_WISHBONE_UNUSED(13)
-`DEF_WISHBONE_UNUSED(14)
 `DEF_WISHBONE_UNUSED(15)
 
 wire    [7:0]   limb_d_out;
@@ -192,10 +170,10 @@ limb_interface limb_interface_inst (
     .wb_dat_o(wb_dat_from_limb),
     .wb_dat_i(wb_dat_to_limb),
     .wb_ack_i(wb_ack_limb),
-    .clk(ddr_clk_in) );
+    .clk(ck150) );
 
 wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
-    .clk(ddr_clk_in),
+    .clk(ck150),
     .adr_i({wb_adr_blockram[3:0], 2'b00}),
     .dat_i(wb_dat_to_blockram),
     .dat_o(wb_dat_from_blockram),
@@ -206,7 +184,7 @@ wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
     .cyc_i(wb_cyc_blockram) );
 
 wb_conmax_top #( .dw(32), .aw(36) ) wb_conmax_inst (
-    .clk_i(ddr_clk_in),
+    .clk_i(ck150),
     .rst_i(1'b0),
 
     `CONNECT_MASTER(0, limb),
@@ -232,24 +210,43 @@ wb_conmax_top #( .dw(32), .aw(36) ) wb_conmax_inst (
     `UNUSED_SLAVE(11),
     `UNUSED_SLAVE(12),
     `UNUSED_SLAVE(13),
-    `UNUSED_SLAVE(14),
+    `CONNECT_SLAVE(14, dram),
     `UNUSED_SLAVE(15)
 );
 
-/*
+wire            drac_srd;
+wire            drac_swr;
+wire    [33:5]  drac_sa;
+wire    [255:0] drac_swdat;
+wire    [31:0]  drac_smsk;
+wire    [255:0] drac_srdat;
+wire            drac_srdy;
+wire    [7:0]   drac_dbg;
+
+assign drac_dbg = 8'h00;
 assign ddr_nras = ddr_cmd[2];
 assign ddr_ncas = ddr_cmd[1];
 assign ddr_nwe  = ddr_cmd[0];
-assign ddr_reset = 0;
-assign mem_rd = 0;
-assign mem_wr = 0;
-assign mem_addr = 29'h0;
-assign mem_wrdat = 256'h0;
-assign mem_mask = 32'h0;
-assign mem_debug = 8'h0;
-*/
 
-/*
+drac_wb_adapter drac_wb (
+    .drac_srd_o     (drac_srd),
+    .drac_swr_o     (drac_swr),
+    .drac_sa_o      (drac_sa),
+    .drac_swdat_o   (drac_swdat),
+    .drac_smsk_o    (drac_smsk),
+    .drac_srdat_i   (drac_srdat),
+    .drac_srdy_i    (drac_srdy),
+
+    .wb_adr_i       (wb_adr_dram),
+    .wb_we_i        (wb_we_dram),
+    .wb_sel_i       (wb_sel_dram),
+    .wb_stb_i       (wb_stb_dram),
+    .wb_cyc_i       (wb_cyc_dram),
+    .wb_dat_i       (wb_dat_to_dram),
+    .wb_dat_o       (wb_dat_from_dram),
+    .wb_ack_o       (wb_ack_dram)
+);
+
 drac_ddr3 drac (
     .ckin           (ddr_clk_in),   // should be 62.5 MHz
     .ckout          (ck150),
@@ -268,16 +265,15 @@ drac_ddr3 drac (
     .dckn           (ddr_nck),
     .dodt           (ddr_odt),
 
-    .srd(mem_rd),
-    .swr(mem_wr),
-    .sa(mem_addr),
-    .swdat(mem_wrdat),
-    .smsk(mem_mask),
-    .srdat(),
-    .srdy(),
+    .srd(drac_srd),
+    .swr(drac_swr),
+    .sa(drac_sa),
+    .swdat(drac_swdat),
+    .smsk(drac_smsk),
+    .srdat(drac_srdat),
+    .srdy(drac_srdy),
     .dbg_out(),
-    .dbg_in(mem_debug)
+    .dbg_in(drac_dbg)
 );
-*/
 
 endmodule

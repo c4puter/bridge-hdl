@@ -31,6 +31,7 @@ all: bitstream
 
 SOURCES_VerilogFile := \
 ../../modules/wb_ram/wb_ram.v \
+../../modules/drac_ddr3/drac_ddr3.v \
 ../../modules/wb_conmax/wb_conmax_pri_dec.v \
 ../../modules/wb_conmax/wb_conmax_arb.v \
 ../../top/c4-0/bridge.v \
@@ -42,7 +43,8 @@ SOURCES_VerilogFile := \
 ../../modules/flipflop/flipflop.v \
 ../../modules/wb_conmax/wb_conmax_master_if.v \
 ../../modules/wb_conmax/wb_conmax_top.v \
-../../modules/wb_conmax/wb_conmax_slave_if.v
+../../modules/wb_conmax/wb_conmax_slave_if.v \
+../../modules/drac_wb_adapter/drac_wb_adapter.v
 
 SOURCES_UCFFile := \
 ../../top/c4-0/bridge.ucf
