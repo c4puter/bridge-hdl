@@ -8,6 +8,10 @@ module limb_test_top (
     input               limb_nrd,
     input               limb_start,
     output              limb_nwait,
+    output      [35:0]  wb_adr_o,
+    output      [31:0]  wb_dat_o,
+    output              wb_we_o,
+    output              wb_stb_o,
     input               clk
 );
 
@@ -22,6 +26,11 @@ wire    [31:0]  wb_dat_from_ram;
 wire            wb_ack;
 
 assign wb_adr = {wb_adr_full[3:0], 2'b00};
+
+assign wb_adr_o = wb_adr_full;
+assign wb_dat_o = wb_dat_to_ram;
+assign wb_we_o = wb_we;
+assign wb_stb_o = wb_stb;
 
 limb_interface limb_interface_inst (
     .limb_d_in(limb_d_in),

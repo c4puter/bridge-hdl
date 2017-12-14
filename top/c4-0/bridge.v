@@ -68,19 +68,21 @@ assign pci_ndevsel  = 1'b1;
 
 assign cpu_d        = 32'hZZZZZZZZ;
 assign cpu_nwait    = 1'b1;
-assign cpu_nack     = 1'b11;
-assign cpu_nint     = 1'b11;
+assign cpu_nack     = 2'b11;
+assign cpu_nint     = 2'b11;
 assign cpu_clk_out  = 1'b0;
 
 assign limb_nreq    = 1'b0;
 
-wire ck150;
-wire ck75;
+wire [31:0] gpio_in;
+wire [31:0] gpio_out;
+
+wire clk150;
+wire clk75;
 wire[2:0] ddr_cmd;
-wire ddr_reset;
+wire reset;
 
 `define DEF_WISHBONE_WIRES(name) \
-    (* keep="soft" *) \
     wire    [35:0]  wb_adr_``name; \
     wire            wb_we_``name; \
     wire    [3:0]   wb_sel_``name; \
@@ -133,6 +135,7 @@ wire ddr_reset;
 `DEF_WISHBONE_WIRES(limb)
 `DEF_WISHBONE_WIRES(blockram)
 `DEF_WISHBONE_WIRES(dram)
+`DEF_WISHBONE_WIRES(gpio)
 `DEF_WISHBONE_UNUSED(1)
 `DEF_WISHBONE_UNUSED(2)
 `DEF_WISHBONE_UNUSED(3)
@@ -171,10 +174,10 @@ limb_interface limb_interface_inst (
     .wb_dat_o(wb_dat_from_limb),
     .wb_dat_i(wb_dat_to_limb),
     .wb_ack_i(wb_ack_limb),
-    .clk(ck150) );
+    .clk(clk75) );
 
 wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
-    .clk(ck150),
+    .clk(clk75),
     .adr_i({wb_adr_blockram[3:0], 2'b00}),
     .dat_i(wb_dat_to_blockram),
     .dat_o(wb_dat_from_blockram),
@@ -185,7 +188,7 @@ wb_ram #( .ADDR_WIDTH(6) ) wb_ram_inst (
     .cyc_i(wb_cyc_blockram) );
 
 wb_conmax_top #( .dw(32), .aw(36) ) wb_conmax_inst (
-    .clk_i(ck150),
+    .clk_i(clk75),
     .rst_i(1'b0),
 
     `CONNECT_MASTER(0, limb),
@@ -198,7 +201,7 @@ wb_conmax_top #( .dw(32), .aw(36) ) wb_conmax_inst (
     `UNUSED_MASTER(7),
 
     `CONNECT_SLAVE(0, blockram),
-    `UNUSED_SLAVE(1),
+    `CONNECT_SLAVE(1, gpio),
     `UNUSED_SLAVE(2),
     `UNUSED_SLAVE(3),
     `UNUSED_SLAVE(4),
@@ -222,9 +225,9 @@ wire    [255:0] drac_swdat;
 wire    [31:0]  drac_smsk;
 wire    [255:0] drac_srdat;
 wire            drac_srdy;
-wire    [7:0]   drac_dbg;
+wire    [2:0]   drac_dbg_in;
+wire    [7:0]   drac_dbg_out;
 
-assign drac_dbg = 8'h00;
 assign ddr_nras = ddr_cmd[2];
 assign ddr_ncas = ddr_cmd[1];
 assign ddr_nwe  = ddr_cmd[0];
@@ -237,6 +240,7 @@ drac_wb_adapter drac_wb (
     .drac_smsk_o    (drac_smsk),
     .drac_srdat_i   (drac_srdat),
     .drac_srdy_i    (drac_srdy),
+    .clk150         (clk150),
 
     .wb_adr_i       (wb_adr_dram),
     .wb_we_i        (wb_we_dram),
@@ -245,14 +249,17 @@ drac_wb_adapter drac_wb (
     .wb_cyc_i       (wb_cyc_dram),
     .wb_dat_i       (wb_dat_to_dram),
     .wb_dat_o       (wb_dat_from_dram),
-    .wb_ack_o       (wb_ack_dram)
+    .wb_ack_o       (wb_ack_dram),
+    .clk75          (clk75),
+
+    .reset          (reset)
 );
 
 drac_ddr3 drac (
     .ckin           (ddr_clk_in),   // should be 62.5 MHz
-    .ckout          (ck150),
-    .ckouthalf      (ck75),
-    .reset          (ddr_reset),
+    .ckout          (clk150),
+    .ckouthalf      (clk75),
+    .reset          (reset),
     .ddq            (ddr_dq),
     .dqsp           (ddr_pdqs),
     .dqsn           (ddr_ndqs),
@@ -273,8 +280,28 @@ drac_ddr3 drac (
     .smsk(drac_smsk),
     .srdat(drac_srdat),
     .srdy(drac_srdy),
-    .dbg_out(),
-    .dbg_in(drac_dbg)
+    .dbg_out(drac_dbg_in),
+    .dbg_in(drac_dbg_out)
 );
+
+wb_simple_gpio gpio (
+    .wb_adr_i       (wb_adr_gpio),
+    .wb_we_i        (wb_we_gpio),
+    .wb_sel_i       (wb_sel_gpio),
+    .wb_stb_i       (wb_stb_gpio),
+    .wb_cyc_i       (wb_cyc_gpio),
+    .wb_dat_i       (wb_dat_to_gpio),
+    .wb_dat_o       (wb_dat_from_gpio),
+    .wb_ack_o       (wb_ack_gpio),
+
+    .gpio_in        (gpio_in),
+    .gpio_out       (gpio_out),
+
+    .clk            (clk75)
+);
+
+assign gpio_in[7:0] = drac_dbg_out;
+assign gpio_in[8] = reset;
+assign drac_dbg_in = gpio_out[2:0];
 
 endmodule

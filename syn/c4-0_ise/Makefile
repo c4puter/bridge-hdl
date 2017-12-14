@@ -37,6 +37,7 @@ SOURCES_VerilogFile := \
 ../../top/c4-0/bridge.v \
 ../../modules/wb_conmax/wb_conmax_rf.v \
 ../../modules/wb_conmax/wb_conmax_pri_enc.v \
+../../modules/wb_simple_gpio/wb_simple_gpio.v \
 ../../modules/wb_conmax/wb_conmax_defines.v \
 ../../modules/wb_conmax/wb_conmax_msel.v \
 ../../modules/limb_interface/limb_interface.v \

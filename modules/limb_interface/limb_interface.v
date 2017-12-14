@@ -61,27 +61,24 @@ wire            L_autoincr;
 wire            W_capture_wb;
 wire    [3:0]   L_limb_data_select;
 
-reg     [7:0]   L_ad_from_limb  [8:0];
+reg     [71:0]  L_ad_from_limb      = 72'h000000000_00000000;
+//reg     [7:0]   L_ad_from_limb  [8:0];
 reg     [31:0]  W_data_from_wb      = 32'h00000000;
 
 genvar i;
-for (i = 0; i < 9; i = i + 1)
-    initial L_ad_from_limb[i] = 8'h00;
 
 // Capture address and data coming from LIMB
 always @(posedge L_clk)
-    if (L_capture_limb[0]) L_ad_from_limb[0] <= (L_autoincr ? L_ad_from_limb[0] + 8'b1 : limb_d_in);
+    if (L_capture_limb[0]) L_ad_from_limb[7:0] <= (L_autoincr ? L_ad_from_limb[7:0] + 8'b1 : limb_d_in - 8'b1);
 
 for (i = 1; i < 9; i = i + 1)
     always @(posedge L_clk)
-        if (L_capture_limb[i]) L_ad_from_limb[i] <= limb_d_in;
+        if (L_capture_limb[i]) L_ad_from_limb[(8*i)+:8] <= limb_d_in;
 
 // Transfer address and data from LIMB to Wishbone clock domain
 always @(posedge W_clk) begin
-    wb_adr_o <= {L_ad_from_limb[4][3:0], L_ad_from_limb[3], L_ad_from_limb[2],
-                 L_ad_from_limb[1], L_ad_from_limb[0]};
-    wb_dat_o <= {L_ad_from_limb[8], L_ad_from_limb[7],
-                 L_ad_from_limb[6], L_ad_from_limb[5]};
+    wb_adr_o <= L_ad_from_limb[35:0];
+    wb_dat_o <= L_ad_from_limb[71:40];
 end
 
 // Miscellaneous interface control signals
@@ -202,10 +199,7 @@ end
 
 // A/D load is generally a function of the state, but the address LSB can also
 // be loaded on autoincrement or any time limb_start is asserted.
-assign      L_capture_limb[0] =
-                limb_start ||
-                (L_next_continues && L_cyc_is_write ? L_state[DATA0]
-                                                    : L_state[DATA3]);
+assign      L_capture_limb[0] = L_state[DATA0];
 assign      L_capture_limb[8:1] = L_state[7:0];
 assign      L_req_wr = L_cyc_is_write && L_state[DATA3];
 assign      L_req_rd = !limb_nrd && L_state[DATA0];

@@ -8,5 +8,6 @@ modules = {
         "../../modules/drac_wb_adapter",
         "../../modules/wb_ram",
         "../../modules/wb_conmax",
+        "../../modules/wb_simple_gpio",
         ]
     }
